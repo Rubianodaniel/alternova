@@ -1,7 +1,6 @@
 from django.db import models
 from base.models import BaseModel
 
-
 class Movies(BaseModel):
     
     # TODO;
@@ -37,5 +36,7 @@ class ViewMovie(BaseModel):
     class Meta:
         verbose_name= "Views"
 
-    def __str__(self) -> str:
-        return self.name
+   
+
+
+

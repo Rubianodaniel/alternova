@@ -7,6 +7,11 @@ class MoviesSerializer(serializers.ModelSerializer):
         model = Movies
         exclude = ('created_date','modify_date','deleted_date')
 
+    def validate_type(self, value):
+        if value == "serie" or value != "movie":
+            return value
+        raise serializers.ValidationError("Error type must be serie or movie")
+
 
 class ScoreSerializer(serializers.ModelSerializer):
 

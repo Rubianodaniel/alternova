@@ -16,7 +16,6 @@ class Moviesviewset(viewsets.ModelViewSet):
     
     def get_queryset(self):
         data = Movies.objects.all().values()
-        
         return data
 
 

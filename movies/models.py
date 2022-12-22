@@ -11,28 +11,41 @@ class Movies(BaseModel):
     class Meta:
         verbose_name = "Movies"
 
+    def __str__(self) -> str:
+        return self.name
+    
+
 class ScoreMovie(BaseModel):
 
     # TODO:
     score = models.IntegerField()
-    name_id  = models.ForeignKey(Movies, on_delete=models.CASCADE, verbose_name= "Movie Name")
+    name  = models.ForeignKey(Movies, on_delete=models.CASCADE, verbose_name= "Movie Name")
 
     class Meta:
         verbose_name= "score"
         
-    def __str__(self) -> str:
-        return self.score
-    
+
 
 
 class ViewMovie(BaseModel):
 
     # TODO:
     view = models.BooleanField(default=False)
-    name_id  = models.ForeignKey(Movies, on_delete=models.CASCADE, verbose_name= "Movie Name")
+    name  = models.ForeignKey(Movies, on_delete=models.CASCADE, verbose_name= "Movie Name")
 
     class Meta:
         verbose_name= "Views"
+
+
+class MeanScoreMovie(BaseModel):
+    
+    # TODO:
+    mean_score = models.DecimalField(max_digits=2, decimal_places=2)
+    name  = models.ForeignKey(Movies, on_delete=models.CASCADE, verbose_name= "Movie Name")
+
+    class Meta:
+        verbose_name= "Views"
+
 
    
 

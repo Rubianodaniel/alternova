@@ -1,16 +1,5 @@
 from rest_framework import serializers
-from .models import Movies,ScoreMovie, ViewMovie
-
-
-class MoviesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Movies
-        exclude = ('created_date','modify_date','deleted_date')
-
-    def validate_type(self, value):
-        if value == "serie" or value == "movie":
-            return value
-        raise serializers.ValidationError("Error type must be serie or movie")
+from .models import Movies,ScoreMovie, ViewMovie, MeanScoreMovie
 
 
 class ScoreSerializer(serializers.ModelSerializer):
@@ -28,9 +17,11 @@ class ScoreSerializer(serializers.ModelSerializer):
        
         data = {
             "score":instance.score,
-            "name":instance.name_id.name
+            "name":instance.name.name
         }
         return data
+
+
 
 
 
@@ -43,16 +34,39 @@ class ViewSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = {
             "view": instance.view,
-            "name": instance.name_id.name
+            "name": instance.name.name
+        }
+        return data
+
+class MeanScoreSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ScoreMovie
+        exclude = ('created_date','modify_date','deleted_date')
+
+    def to_representation(self, instance):
+        data  = {
+            "name":instance.name.name,
+            "mean_score":instance.name__avg
         }
         return data
 
 
-class ListMoviesSerializer(serializers.ModelSerializer):
-    score = serializers.StringRelatedField()
 
-    class Meta:
-        model = Movies()
+class MoviesSerializer(serializers.ModelSerializer):
+   
+    class Meta: 
+        model = Movies
         exclude = ('created_date','modify_date','deleted_date')
+        
+
+    def validate_type(self, value):
+        if value == "serie" or value == "movie":
+            return value
+        raise serializers.ValidationError("Error type must be serie or movie")
 
     
+   
+       
+
+        

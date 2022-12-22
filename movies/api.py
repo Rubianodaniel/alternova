@@ -1,17 +1,17 @@
 import random
-from django.db.models import Count
+from django.db.models import Count, Avg
 from rest_framework import status
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response  
 
 
 from .models import (Movies, ScoreMovie, ViewMovie)
-from .serializers import (MoviesSerializer,ListMoviesSerializer, ScoreSerializer,
-                        ViewSerializer)
+from .serializers import (MoviesSerializer, ScoreSerializer,
+                        ViewSerializer, MeanScoreSerializer)
 
 
 class Moviesviewset(viewsets.ModelViewSet):
-    serializer_class = MoviesSerializer
+    serializer_class = MoviesSerializer 
     permission_classes = [permissions.AllowAny]
     
     def get_queryset(self):
@@ -19,22 +19,16 @@ class Moviesviewset(viewsets.ModelViewSet):
         return data
 
 
-class ListMoviesViewset(viewsets.GenericViewSet):
-    serializer_class = ListMoviesSerializer
+    
+class countviewset(viewsets.ModelViewSet):
+    serializer_class = MeanScoreSerializer
     permission_classes = [permissions.AllowAny]
-
+    
     def get_queryset(self):
-        data = Movies.objects.all()
+        
+        data = ScoreMovie.objects.annotate(Avg("name"))
         return data
 
-    def list(self, request):
-        data = self.get_queryset()
-       
-        data = {
-            
-        } 
-
-        return Response(data)
 
 
 class RandomMovie(viewsets.ModelViewSet):
@@ -56,15 +50,15 @@ class RandomMovie(viewsets.ModelViewSet):
         return Response(data)
 
 
-class FilterMovieByName(viewsets.ModelViewSet):
+class OrderMoviesByparam(viewsets.ModelViewSet):
     serializer_class = MoviesSerializer
     permission_classes = [permissions.AllowAny]
     
     def get_queryset(self):
         return Movies.objects.all()
     
-    def get_object(self):
-        return self.get_serializer().Meta.model.objects.filter(name=self.kwargs["name"])
+    def get_object(self, value="name"):
+        return self.get_serializer().Meta.model.objects.filter(name=self.kwargs[value])
     
 
 class ScoreMovieViewset(viewsets.ModelViewSet):

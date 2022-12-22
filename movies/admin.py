@@ -9,10 +9,10 @@ class MoviesAdmin(admin.ModelAdmin):
     list_filter = ("name", "gender", "type")
 
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = ("name", "score")
+    list_display = ("name_id", "score")
 
 class ViewsAdmin(admin.ModelAdmin):
-    list_display = ("name", "View")
+    list_display = ("name_id", "view")
 
 
 admin.site.register(Movies, MoviesAdmin)

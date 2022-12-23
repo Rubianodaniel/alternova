@@ -1,3 +1,4 @@
+from django.db.models import Count, Avg
 from rest_framework import serializers
 from .models import Movies,ScoreMovie, ViewMovie, MeanScoreMovie
 
@@ -21,8 +22,22 @@ class ScoreSerializer(serializers.ModelSerializer):
         }
         return data
 
+        
 
+class MeanScoreSerializer(serializers.Serializer):
+    data = ScoreMovie.objects.values("name").annotate(Avg("score")).order_by()
+    
+    # class Meta:
+    #     model = ScoreMovie
+    #     exclude = ()
 
+    # def to_representation(self, instance):
+    #     data = {
+    #         "name":instance["name"],
+    #         "score": instance["score__avg"]
+    #     }
+    #     return data
+   
 
 
 class ViewSerializer(serializers.ModelSerializer):
@@ -37,28 +52,36 @@ class ViewSerializer(serializers.ModelSerializer):
             "name": instance.name.name
         }
         return data
-
-class MeanScoreSerializer(serializers.ModelSerializer):
     
+
+class CountViewSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = ScoreMovie
+        model = ViewMovie
         exclude = ('created_date','modify_date','deleted_date')
 
     def to_representation(self, instance):
-        data  = {
-            "name":instance.name.name,
-            "mean_score":instance.name__avg
+        data = {
+            "view": instance["name"],
+            "name": instance["name__count"]
         }
         return data
 
 
 
+
 class MoviesSerializer(serializers.ModelSerializer):
-   
+
+    
+                
+
     class Meta: 
         model = Movies
-        exclude = ('created_date','modify_date','deleted_date')
-        
+        fields = (
+            "id", "name", "gender","type", "mean_score"
+        )
+        read_only_fields = ("id", "mean_score")
+
 
     def validate_type(self, value):
         if value == "serie" or value == "movie":
@@ -66,7 +89,17 @@ class MoviesSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError("Error type must be serie or movie")
 
     
-   
-       
+    def to_representation(self, instance):
+        '''select avg(movies_scoremovie.score), movies_movies.name
+            from movies_scoremovie
+            INNER JOIN movies_movies ON movies_scoremovie.name_id = movies_movies.id
+            GROUP BY name'''
+        
+        data ={
+            "name":instance["name"],    
+            "gender": instance["gender"],
+            #"mean_score": mean_score
+        }
+        return data
 
         

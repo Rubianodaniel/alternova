@@ -21,23 +21,7 @@ class ScoreSerializer(serializers.ModelSerializer):
             "name":instance.name.name
         }
         return data
-
-        
-
-class MeanScoreSerializer(serializers.Serializer):
-    data = ScoreMovie.objects.values("name").annotate(Avg("score")).order_by()
-    
-    # class Meta:
-    #     model = ScoreMovie
-    #     exclude = ()
-
-    # def to_representation(self, instance):
-    #     data = {
-    #         "name":instance["name"],
-    #         "score": instance["score__avg"]
-    #     }
-    #     return data
-   
+     
 
 
 class ViewSerializer(serializers.ModelSerializer):
@@ -54,33 +38,15 @@ class ViewSerializer(serializers.ModelSerializer):
         return data
     
 
-class CountViewSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ViewMovie
-        exclude = ('created_date','modify_date','deleted_date')
-
-    def to_representation(self, instance):
-        data = {
-            "view": instance["name"],
-            "name": instance["name__count"]
-        }
-        return data
-
-
-
 
 class MoviesSerializer(serializers.ModelSerializer):
-
-    
-                
-
+       
     class Meta: 
         model = Movies
         fields = (
-            "id", "name", "gender","type", "mean_score"
+            "id", "name", "gender","type", "mean_score", "views"
         )
-        read_only_fields = ("id", "mean_score")
+        read_only_fields = ("id", "mean_score", "views")
 
 
     def validate_type(self, value):
@@ -90,15 +56,26 @@ class MoviesSerializer(serializers.ModelSerializer):
 
     
     def to_representation(self, instance):
-        '''select avg(movies_scoremovie.score), movies_movies.name
-            from movies_scoremovie
-            INNER JOIN movies_movies ON movies_scoremovie.name_id = movies_movies.id
-            GROUP BY name'''
+    
+        query_mean_score = ScoreMovie.objects.values("name").annotate(Avg("score")).order_by()
+        mean_score = []
+        for element in query_mean_score:
+            if element["name"] == instance["id"]:
+                mean_score.append(element["score__avg"])
+
+        query_count_views = ViewMovie.objects.values("name").filter(view = 1).annotate(Count("name")).order_by()
+        count_views = []
+        for element in query_count_views:
+            if element["name"]== instance["id"]:
+                count_views.append(element["name__count"])
+
         
         data ={
+            "id": instance["id"],
             "name":instance["name"],    
-            "gender": instance["gender"],
-            #"mean_score": mean_score
+            "gender": instance["gender"], 
+            "mean_score": mean_score[0] if len(mean_score) != 0 else "null",
+            "views" : count_views[0] if len(count_views) != 0 else "null"
         }
         return data
 

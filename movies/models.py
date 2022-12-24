@@ -8,6 +8,7 @@ class Movies(BaseModel):
     gender = models.CharField("gender", max_length=50 , blank=False , null= False)
     type = models.CharField("type", max_length=20, blank=False , null = False)
     mean_score = models.DecimalField(decimal_places=2, max_digits=2, null=True)
+    views = models.IntegerField(null=True)
     
     class Meta:
         verbose_name = "Movies"

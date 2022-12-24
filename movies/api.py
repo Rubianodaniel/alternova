@@ -6,8 +6,7 @@ from rest_framework.response import Response
 
 
 from .models import (Movies, ScoreMovie, ViewMovie)
-from .serializers import (MoviesSerializer, ScoreSerializer,MeanScoreSerializer,
-                        ViewSerializer, CountViewSerializer)
+from .serializers import (MoviesSerializer, ScoreSerializer,ViewSerializer)
 
 
 class Moviesviewset(viewsets.ModelViewSet):
@@ -19,13 +18,7 @@ class Moviesviewset(viewsets.ModelViewSet):
     
     def get_queryset(self):
         data = Movies.objects.all().values()
-        mean_score = Movies.objects.select_related("name_id")
-        print(mean_score.query)
         return data
-
-
-
-
 
 
 class RandomMovie(viewsets.ModelViewSet):
@@ -47,17 +40,6 @@ class RandomMovie(viewsets.ModelViewSet):
         return Response(data)
 
 
-class OrderMoviesByparam(viewsets.ModelViewSet):
-    serializer_class = MoviesSerializer
-    permission_classes = [permissions.AllowAny]
-    
-    
-    def get_queryset(self, request):
-        return Movies.objects.all()
-    
-    def get_object(self, value="name"):
-        return self.get_serializer().Meta.model.objects.filter(name=self.kwargs[value])
-    
 
 class ScoreMovieViewset(viewsets.ModelViewSet):
     serializer_class = ScoreSerializer
@@ -65,21 +47,6 @@ class ScoreMovieViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return ScoreMovie.objects.all()
-
-
-class MeanViewset(viewsets.GenericViewSet):
-
-    # serializer_class = MeanScoreSerializer
-    # permission_classes = [permissions.AllowAny]
-    
-    # def get_queryset(self):
-    #     data = ScoreMovie.objects.values("name").annotate(Avg("score")).order_by()
-    #     return data
-      
-    # def list(self, request):
-    #     data = self.get_queryset()
-    #     return Response(data)
-    pass
 
 
 class ViewMovieViewset(viewsets.ModelViewSet):
@@ -91,18 +58,7 @@ class ViewMovieViewset(viewsets.ModelViewSet):
 
 
 
-class CountViewsViewset(viewsets.GenericViewSet):
-    serializer_class = CountViewSerializer
-    permission_classes = [permissions.AllowAny]
-    
-    def get_queryset(self):
-        data = ViewMovie.objects.values("name").filter(view = 1).annotate(Count("name")).order_by()
-        return data 
 
-    def list(self, request):
-        data = self.get_queryset()
-        return Response(data)
-        
 
     
 

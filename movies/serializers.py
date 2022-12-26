@@ -74,6 +74,7 @@ class MoviesSerializer(serializers.ModelSerializer):
             "id": instance["id"],
             "name":instance["name"],    
             "gender": instance["gender"], 
+            "type": instance["type"],
             "mean_score": mean_score[0] if len(mean_score) != 0 else "null",
             "views" : count_views[0] if len(count_views) != 0 else "null"
         }

@@ -17,7 +17,7 @@ class Moviesviewset(viewsets.ModelViewSet):
 
     
     def get_queryset(self):
-        data = Movies.objects.all().values()
+        data = Movies.objects.all()
         return data
 
 
@@ -31,10 +31,11 @@ class RandomMovie(viewsets.ModelViewSet):
     def list(self, request):
         data = self.get_queryset()
         data = random.choice(data)
+        print(data.mean_score)
         data = {
             "name":data.name,
             "gender":data.gender,
-            "type":data.type,
+            "type":data.type,     
         } 
 
         return Response(data)

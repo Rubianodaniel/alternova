@@ -59,22 +59,24 @@ class MoviesSerializer(serializers.ModelSerializer):
     
         query_mean_score = ScoreMovie.objects.values("name").annotate(Avg("score")).order_by()
         mean_score = []
+        print (mean_score)
         for element in query_mean_score:
-            if element["name"] == instance["id"]:
+            if element["name"] == instance.id:
                 mean_score.append(element["score__avg"])
 
-        query_count_views = ViewMovie.objects.values("name").filter(view = 1).annotate(Count("name")).order_by()
+        query_count_views = ViewMovie.objects.values("name").annotate(Count("name")).order_by()
+
         count_views = []
         for element in query_count_views:
-            if element["name"]== instance["id"]:
+            if element["name"] == instance.id:
                 count_views.append(element["name__count"])
 
         
         data ={
-            "id": instance["id"],
-            "name":instance["name"],    
-            "gender": instance["gender"], 
-            "type": instance["type"],
+            "id": instance.id,
+            "name":instance.name,    
+            "gender": instance.gender, 
+            "type": instance.type,
             "mean_score": mean_score[0] if len(mean_score) != 0 else "null",
             "views" : count_views[0] if len(count_views) != 0 else "null"
         }
